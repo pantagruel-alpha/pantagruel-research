@@ -20,3 +20,7 @@ pnpm-debug.log*
 
 # Astro
 .astro/
+
+# Committed agent/publishing guides (override global git ignore)
+!AGENTS.md
+!CLAUDE.md
