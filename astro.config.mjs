@@ -5,7 +5,7 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://pantagruelalpha.github.io',
+  site: 'https://pantagruel-alpha.github.io',
   base: '/pantagruel-research',
   integrations: [mdx(), sitemap(), tailwind()]
 });
