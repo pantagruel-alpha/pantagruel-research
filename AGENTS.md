@@ -1,135 +1,26 @@
-# Pantagruel Research — Guía de publicación
+# Pantagruel Research
 
-Blog técnico de **Pantagruel Research**, construido con **Astro** (plantilla Astrofy) y desplegado en **GitHub Pages** vía GitHub Actions.
+## Context
 
-- **Sitio en producción**: https://pantagruel-alpha.github.io/pantagruel-research
-- **Repositorio**: `pantagruel-alpha/pantagruel-research` (owner: cuenta de usuario `pantagruel-alpha`)
-- **Idioma por defecto**: español, salvo que se pida otra cosa.
+Pantagruel Research is the technical blog of Pantagruel Alpha for long-form work on quantitative finance, machine learning, and data science. It is built with Astro and deployed to GitHub Pages at `https://pantagruel-alpha.github.io/pantagruel-research`.
 
-## Planificación
+Use Spanish by default unless the user requests another language.
 
-El backlog canónico es el [GitHub Project empresarial `pantagruel`](https://github.com/users/pantagruel-alpha/projects/3).
-Las tareas de este producto son issues de `pantagruel-alpha/pantagruel-research`,
-asignadas a `aprendesc` por defecto. `docs/context.md` conserva memoria local y
-se ignora mediante `.git/info/exclude`; `docs/sessions/` se ignora globalmente.
-No se mantiene una lista local paralela de tareas.
+## Product classification
 
----
+`documental-contribution` governs article creation and editorial changes. `frontend-app` governs changes to the blog interface.
 
-## Modelo de trabajo (importante)
+## Project structure
 
-El trabajo editorial se hace en **`docs/`**, no directamente en `src/content/blog/`.
+- `docs/`: canonical editorial workspace. Each article lives in `YYYY-MM-DD-<slug>/` with a same-named Markdown file and its attachments.
+- `docs/context.md`: locally ignored project memory; `docs/sessions/`: globally ignored session summaries; `docs/issues/<issue-title-kebab-case>/`: versioned issue-specific supporting documents when needed.
+- `src/content/blog/`: published Astro collection; content enters it only through an explicit publication request.
+- `public/`: static assets referenced by published articles and the site.
+- `.agents/skills/` and `.claude/skills/`: synchronized project-local workflows for Codex and Claude Code.
+- `.github/workflows/deploy.yml`: GitHub Pages deployment triggered by pushes to `main`.
 
-- **Redacción y desarrollo**: cada artículo se escribe y evoluciona en su carpeta dentro de `docs/`.
-- **Publicación bajo demanda**: los artículos **no se publican solos**. Solo cuando se solicita explícitamente se toma un artículo concreto de `docs/`, se lleva a `src/content/blog/` y se despliega. Al pedir la publicación **hay que indicar qué artículo** de `docs/` se publica.
+## Instructions
 
-Es decir: `docs/` es el taller (fuente de verdad del contenido en desarrollo); `src/content/blog/` es el escaparate (lo que realmente se sirve en la web).
-
----
-
-## Estructura de `docs/`
-
-Una carpeta por artículo. **El nombre de la carpeta empieza por la fecha de desarrollo** (`YYYY-MM-DD`) para poder ordenar los artículos cronológicamente:
-
-```text
-docs/
-  YYYY-MM-DD-<slug>/
-    YYYY-MM-DD-<slug>.md     # documento del artículo (con su frontmatter)
-    <adjuntos...>            # imágenes u otros archivos del artículo
-```
-
-Ejemplo real:
-
-```text
-docs/
-  2026-03-22-welcome-to-pantagruel-research/
-    2026-03-22-welcome-to-pantagruel-research.md
-    post_img.webp
-  2026-07-13-perceptron-rosenblatt/
-    2026-07-13-perceptron-rosenblatt.md
-    post_img.webp
-```
-
-- La **fecha del prefijo** es la fecha de desarrollo del artículo (normalmente coincide con `pubDate`).
-- El documento Markdown dentro de la carpeta lleva el **mismo nombre que la carpeta**.
-- Los **adjuntos** (imágenes, etc.) viven junto al Markdown en su carpeta.
-
----
-
-## Frontmatter del artículo
-
-El Markdown en `docs/` ya incluye el frontmatter que usará al publicarse (esquema en `src/content/config.ts`):
-
-```markdown
----
-title: "Título del artículo"              # obligatorio — genera el slug/URL de la web
-description: "Resumen corto del artículo." # obligatorio
-pubDate: "Jul 13 2026"                     # obligatorio — formato "Mmm DD YYYY"
-heroImage: "/post_img.webp"                # opcional — ruta bajo public/
-badge: "NEW"                               # opcional — etiqueta visual
-tags: ["tag1", "tag2"]                     # opcional — deben ser únicos
----
-
-## Contenido en Markdown a partir de aquí
-```
-
-Reglas útiles:
-
-- **Imágenes / `heroImage`**: en la web se sirven desde `public/`. Una ruta `"/post_img.webp"` apunta a `public/post_img.webp`. Si un artículo usa una imagen propia, súbela también a `public/` al publicar.
-- **Matemáticas**: el blog **no** tiene plugin de LaTeX. No uses `$$...$$`; escribe las fórmulas en texto o en bloques de código para que no se rendericen rotas.
-- **Tags únicos**: el build falla si un artículo repite un tag.
-
----
-
-## Publicar un artículo (bajo demanda)
-
-Cuando se solicite publicar, indicando **qué artículo** de `docs/` se publica:
-
-1. Copia el Markdown del artículo desde su carpeta en `docs/` a `src/content/blog/<slug>.md`.
-   - El `<slug>` del archivo publicado puede omitir el prefijo de fecha (la fecha ya va en `pubDate`).
-2. Copia a `public/` los adjuntos que el artículo referencie (p. ej. `heroImage`).
-3. Valida con `npm run build`.
-4. Commit en `develop` y push.
-5. Fusiona `develop → main` y haz push de `main`. **El push a `main` dispara el deploy.**
-
-```bash
-# 1. Publicar el artículo <slug> desde docs/
-git checkout develop
-cp docs/YYYY-MM-DD-<slug>/YYYY-MM-DD-<slug>.md src/content/blog/<slug>.md
-# (copia también sus adjuntos a public/ si hace falta)
-
-# 2. Validar y commitear
-npm run build
-git add src/content/blog/ public/
-git commit -m "content: publicar <título>"
-git push origin develop
-
-# 3. Desplegar: merge a main y push (dispara GitHub Actions)
-git checkout main
-git merge develop --no-edit
-git push origin main
-git checkout develop
-```
-
-Tras el push a `main`, comprueba la pestaña **Actions**: cuando el workflow **"Deploy to GitHub Pages"** salga en verde, el artículo estará en producción.
-
-> El deploy **solo** ocurre al hacer push a `main`. Trabajar en `develop` o en `docs/` no publica nada.
-
----
-
-## Comandos
-
-```bash
-npm install        # instalar dependencias
-npm run dev        # servidor local de desarrollo
-npm run build      # build de producción (valida antes de publicar)
-npm run preview    # previsualizar el build
-```
-
----
-
-## Notas de operación
-
-- **GitHub Pages** debe estar en `Settings → Pages → Source: GitHub Actions` (ya configurado). El repo debe ser **público** para que Pages funcione en cuenta personal.
-- El sitio se sirve bajo el subpath `/pantagruel-research` (ver `base` en `astro.config.mjs`); si cambia el owner o el nombre del repo, actualiza `site` y `base`.
-- Este repo vive localmente en `archived/pantagruel-research`; no confundir con el proyecto `pantagruel-alpha`.
+- Use [GitHub Project `pantagruel`](https://github.com/users/pantagruel-alpha/projects/3) as the canonical backlog. Tasks for this product are issues in `pantagruel-alpha/pantagruel-research`, assigned to `aprendesc` by default; use the GitHub connector first and `gh` only for Project operations it does not expose.
+- The local `$publish-pantagruel-article` skill governs publication, deployment, republication, and production verification. On an explicit request for a specific article, promote its canonical content from `docs/` to the Astro collection, validate it, publish through `develop` and `main`, and verify the deployment.
+- The local `$linkedin-announce-pantagruel-article` skill governs LinkedIn announcements for published articles. Prepare or rehearse the post as requested; publish only after an immediate final confirmation of the reviewed post.

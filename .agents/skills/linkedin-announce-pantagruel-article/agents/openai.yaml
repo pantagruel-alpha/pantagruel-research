@@ -1,0 +1,4 @@
+interface:
+  display_name: "LinkedIn Article Announcement"
+  short_description: "Anuncia artículos de Pantagruel en LinkedIn"
+  default_prompt: "Usa $linkedin-announce-pantagruel-article para preparar el anuncio en LinkedIn del artículo indicado."

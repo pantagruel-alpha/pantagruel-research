@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Pantagruel Article"
+  short_description: "Publica artículos de Pantagruel Research"
+  default_prompt: "Usa $publish-pantagruel-article para publicar el artículo especificado de Pantagruel Research."

@@ -1,71 +1,26 @@
-# Pantagruel Research — Guía de publicación (Claude)
+# Pantagruel Research
 
-Este archivo replica la guía de publicación del repositorio. La **fuente de verdad** es [`AGENTS.md`](./AGENTS.md); consúltalo para el detalle completo.
+## Context
 
-- **Sitio en producción**: https://pantagruel-alpha.github.io/pantagruel-research
-- **Repositorio**: `pantagruel-alpha/pantagruel-research`
-- **Stack**: Astro (plantilla Astrofy) + GitHub Pages vía GitHub Actions.
-- **Idioma por defecto**: español.
+Pantagruel Research is the technical blog of Pantagruel Alpha for long-form work on quantitative finance, machine learning, and data science. It is built with Astro and deployed to GitHub Pages at `https://pantagruel-alpha.github.io/pantagruel-research`.
 
----
+Use Spanish by default unless the user requests another language.
 
-## Modelo de trabajo
+## Product classification
 
-- Se **redacta en `docs/`**, no directamente en `src/content/blog/`.
-- Los artículos **no se publican solos**: solo al **solicitarlo explícitamente**, indicando **qué artículo** de `docs/` se publica, se lleva a `src/content/blog/` y se despliega.
-- `docs/` = taller (contenido en desarrollo); `src/content/blog/` = escaparate (lo que sirve la web).
+`documental-contribution` governs article creation and editorial changes. `frontend-app` governs changes to the blog interface.
 
-## Estructura de `docs/`
+## Project structure
 
-Una carpeta por artículo, **con la fecha de desarrollo como prefijo** (`YYYY-MM-DD`) para ordenar cronológicamente:
+- `docs/`: canonical editorial workspace. Each article lives in `YYYY-MM-DD-<slug>/` with a same-named Markdown file and its attachments.
+- `docs/context.md`: locally ignored project memory; `docs/sessions/`: globally ignored session summaries; `docs/issues/<issue-title-kebab-case>/`: versioned issue-specific supporting documents when needed.
+- `src/content/blog/`: published Astro collection; content enters it only through an explicit publication request.
+- `public/`: static assets referenced by published articles and the site.
+- `.agents/skills/` and `.claude/skills/`: synchronized project-local workflows for Codex and Claude Code.
+- `.github/workflows/deploy.yml`: GitHub Pages deployment triggered by pushes to `main`.
 
-```text
-docs/
-  YYYY-MM-DD-<slug>/
-    YYYY-MM-DD-<slug>.md   # documento del artículo (mismo nombre que la carpeta)
-    <adjuntos...>          # imágenes u otros archivos
-```
+## Instructions
 
-Ejemplo:
-
-```text
-docs/
-  2026-03-22-welcome-to-pantagruel-research/
-    2026-03-22-welcome-to-pantagruel-research.md
-    post_img.webp
-  2026-07-13-perceptron-rosenblatt/
-    2026-07-13-perceptron-rosenblatt.md
-    post_img.webp
-```
-
-## Frontmatter mínimo
-
-```markdown
----
-title: "Título"            # obligatorio (genera el slug/URL)
-description: "Resumen."     # obligatorio
-pubDate: "Jul 13 2026"      # obligatorio ("Mmm DD YYYY")
-heroImage: "/post_img.webp" # opcional (bajo public/)
-badge: "NEW"                # opcional
-tags: ["a", "b"]            # opcional, únicos
----
-```
-
-## Publicar (bajo demanda, indicando el artículo)
-
-1. Copia `docs/YYYY-MM-DD-<slug>/YYYY-MM-DD-<slug>.md` → `src/content/blog/<slug>.md`.
-2. Copia a `public/` los adjuntos referenciados (p. ej. `heroImage`).
-3. `npm run build` para validar.
-4. Commit en `develop` → `git push origin develop`.
-5. `git checkout main && git merge develop --no-edit && git push origin main`.
-6. **El push a `main` dispara el deploy** a GitHub Pages.
-
-## Reglas clave
-
-- **Solo `main` publica**; `develop` y `docs/` no despliegan.
-- **Sin LaTeX**: no hay plugin de matemáticas; usa texto o bloques de código, no `$$...$$`.
-- **Imágenes**: se sirven desde `public/`.
-- **Tags únicos** (el build falla si se repiten).
-- **Repo público + Pages en modo GitHub Actions** son requisitos del deploy.
-
-Para todo lo demás (comandos, notas de operación, detalle de publicación), ver `AGENTS.md`.
+- Use GitHub Project `pantagruel` (#3, owner `pantagruel-alpha`) as the canonical backlog. Tasks for this product are issues in `pantagruel-alpha/pantagruel-research`, assigned to `aprendesc` by default.
+- Use the project-local `$publish-pantagruel-article` skill whenever the user asks to publish, deploy, republish, or verify an article.
+- Use the project-local `$linkedin-announce-pantagruel-article` skill whenever the user asks to prepare, rehearse, publish, or verify a LinkedIn announcement for a blog article.
