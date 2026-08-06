@@ -6,6 +6,14 @@ Blog técnico de **Pantagruel Research**, construido con **Astro** (plantilla As
 - **Repositorio**: `pantagruel-alpha/pantagruel-research` (owner: cuenta de usuario `pantagruel-alpha`)
 - **Idioma por defecto**: español, salvo que se pida otra cosa.
 
+## Planificación
+
+El backlog canónico es el [GitHub Project empresarial `pantagruel`](https://github.com/users/pantagruel-alpha/projects/3).
+Las tareas de este producto son issues de `pantagruel-alpha/pantagruel-research`,
+asignadas a `aprendesc` por defecto. `docs/context.md` conserva memoria local y
+se ignora mediante `.git/info/exclude`; `docs/sessions/` se ignora globalmente.
+No se mantiene una lista local paralela de tareas.
+
 ---
 
 ## Modelo de trabajo (importante)
