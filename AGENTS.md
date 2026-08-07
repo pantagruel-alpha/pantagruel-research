@@ -23,7 +23,7 @@ Use Spanish by default unless the user requests another language.
 
 ## Instructions
 
-- GitHub issues: [pantagruel-alpha/pantagruel-research](https://github.com/pantagruel-alpha/pantagruel-research/issues).
+- GitHub Project to get the backlog: [pantagruel](https://github.com/users/pantagruel-alpha/projects/3).
 - Use [GitHub Project `pantagruel`](https://github.com/users/pantagruel-alpha/projects/3) as the canonical backlog. Tasks for this product are issues in `pantagruel-alpha/pantagruel-research`, assigned to `aprendesc` by default; use the GitHub connector first and `gh` only for Project operations it does not expose.
 - The local `$publish-pantagruel-article` skill governs publication, deployment, republication, and production verification. On an explicit request for a specific article, promote its canonical content from `docs/` to the Astro collection, validate it, publish through `develop` and `main`, and verify the deployment.
 - The local `$linkedin-announce-pantagruel-article` skill governs LinkedIn announcements for published articles. Prepare or rehearse the post as requested; publish only after an immediate final confirmation of the reviewed post.
