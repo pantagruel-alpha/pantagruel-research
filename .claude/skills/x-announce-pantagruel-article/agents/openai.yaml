@@ -1,4 +1,4 @@
 interface:
   display_name: "X Article Announcement"
-  short_description: "Anuncia artículos de Pantagruel en X"
-  default_prompt: "Usa $x-announce-pantagruel-article para preparar el anuncio en X del artículo indicado."
+  short_description: "Invita a leer un artículo en X"
+  default_prompt: "Usa $x-announce-pantagruel-article para preparar una invitación breve y natural con imagen y enlace al artículo indicado."
