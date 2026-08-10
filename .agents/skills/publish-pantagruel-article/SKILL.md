@@ -5,6 +5,34 @@ description: Prepare, preview, publish, republish, or verify one Pantagruel Rese
 
 # Publicar un artículo de Pantagruel Research
 
+## Explicar el flujo de forma didáctica
+
+Cuando el usuario pregunte cómo se publica, explicar antes de actuar y no
+modificar ramas, abrir merges, desplegar ni publicar nada. Adaptar el detalle a
+su nivel y presentar el recorrido en este orden:
+
+1. **Desarrollo**: cada artículo tiene una issue, una rama
+   `article/<issue-number>-<short-kebab-name>` creada desde `develop` y una sola
+   carpeta canónica `docs/YYYY-MM-DD-<slug>/` con su Markdown y adjuntos.
+2. **Pre local**: al integrar la rama en `develop`, ejecutar pruebas y build,
+   iniciar la preview y facilitar la URL local exacta. Aclarar que `develop` no
+   publica nada en Internet.
+3. **Revisión**: el usuario inspecciona el artículo. Si solicita correcciones,
+   volver a la misma rama del artículo, repetir la integración y generar una
+   nueva preview; cualquier aprobación anterior queda invalidada.
+4. **Producción**: solo tras la aprobación explícita de la preview vigente,
+   integrar `develop` en `main`; GitHub Pages despliega y después se verifica la
+   URL pública exacta.
+5. **Difusión**: explicar LinkedIn y X como pasos posteriores, opcionales e
+   independientes, cada uno con su propia skill y confirmación final.
+
+Comenzar con un resumen sencillo como
+`rama del artículo → develop/preview local → aprobación → main/producción`.
+Definir cualquier término Git necesario, mostrar los comandos y URLs útiles
+junto a la fase correspondiente y terminar indicando el estado actual y cuál
+sería la siguiente decisión del usuario. No confundir la explicación con una
+autorización para ejecutar el flujo.
+
 ## Respetar las fronteras
 
 - Tratar `docs/YYYY-MM-DD-<slug>/` como única fuente editorial. No editar ni versionar manualmente sus proyecciones en `src/content/blog/` o `public/`.
