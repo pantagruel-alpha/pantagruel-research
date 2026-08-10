@@ -2,7 +2,7 @@
 title: "Welcome to Pantagruel Research"
 description: "Introducing our technical blog — a space to share research notes, models and insights from the quantitative trading desk at Pantagruel Alpha SL."
 pubDate: "Mar 22 2026"
-heroImage: "/post_img.webp"
+heroImage: "/articles/welcome-to-pantagruel-research/post_img.webp"
 tags: ["pantagruel", "announcement"]
 badge: "NEW"
 ---

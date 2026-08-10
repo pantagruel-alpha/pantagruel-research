@@ -1,29 +1,51 @@
-# Pantagruel Research
+# Context
 
-## Context
+Pantagruel Research es el espacio editorial y blog técnico de Pantagruel Alpha
+para trabajos extensos sobre finanzas cuantitativas, machine learning y data
+science. El producto combina un corpus editorial mantenible con una aplicación
+Astro publicada mediante GitHub Pages en
+<https://pantagruel-alpha.github.io/pantagruel-research>.
 
-Pantagruel Research is the technical blog of Pantagruel Alpha for long-form work on quantitative finance, machine learning, and data science. It is built with Astro and deployed to GitHub Pages at `https://pantagruel-alpha.github.io/pantagruel-research`.
+[`docs/`](docs/) es el taller y la fuente canónica de los artículos. Cada
+artículo vive en `docs/YYYY-MM-DD-<slug>/`, con un Markdown homónimo y sus
+adjuntos. [`scripts/sync-articles.mjs`](scripts/sync-articles.mjs) genera desde
+ese corpus la colección de la aplicación [Astro](src/) y los adjuntos aislados
+bajo `public/articles/`; ambas superficies son derivadas y no se editan ni
+versionan manualmente. Los comandos y dependencias viven en
+[`package.json`](package.json). El [workflow de GitHub
+Pages](.github/workflows/deploy.yml) ejecuta las pruebas y solo despliega
+`main`.
 
-Use Spanish by default unless the user requests another language.
+La dirección editorial aplica la relación 1:1 «un issue, una rama, un
+artículo». Cada artículo se define como una contribución documental propia y se
+desarrolla desde `develop` en `article/<issue-number>-<slug>`, con una única
+carpeta canónica bajo `docs/`. `develop` es la superficie de preproducción local
+y `main` la única rama de publicación online; el paso a `main` ocurre después
+de revisar y aprobar la preview local.
 
-## Product classification
+La línea editorial prioriza análisis rigurosos, trazables y legibles en español,
+salvo que se solicite otro idioma. La creación y curación de artículos se trata
+como contribución documental; los cambios de interfaz y experiencia del blog se
+tratan como trabajo frontend. Los artículos existentes y sus imágenes son
+corpus editorial, no contratos de tareas retroactivas.
 
-`documental-contribution` governs article creation and editorial changes. `frontend-app` governs changes to the blog interface.
+El [GitHub Project `pantagruel-research`](https://github.com/users/pantagruel-alpha/projects/4)
+es el backlog exclusivo de este producto. Es independiente del [GitHub Project
+`pantagruel`](https://github.com/users/pantagruel-alpha/projects/3) y no debe
+consultarse este último para responder sobre «backlog», «tareas activas» o
+cualquier concepto equivalente dentro de este repositorio, salvo que el usuario
+solicite expresamente una consulta transversal. Las tareas de este proyecto son
+issues de `pantagruel-alpha/pantagruel-research`; sus
+contratos autocontenidos viven en
+`context/issues/<issue-number>-<issue-title-kebab-case>.md` en correspondencia
+1:1 con los issues del propio repositorio. Este documento conserva dirección editorial, decisiones y
+memoria del proyecto sin duplicar el tablero.
 
-## Project structure
+Los workflows locales de [publicación](.agents/skills/publish-pantagruel-article/SKILL.md),
+[LinkedIn](.agents/skills/linkedin-announce-pantagruel-article/SKILL.md) y
+[X](.agents/skills/x-announce-pantagruel-article/SKILL.md) gobiernan la preview,
+la publicación y los anuncios. Sus espejos bajo [`.claude/skills/`](.claude/skills/)
+mantienen el mismo comportamiento. Ningún anuncio externo se prepara antes de
+verificar producción ni se publica sin confirmación final.
 
-- `docs/`: canonical editorial workspace. Each article lives in `YYYY-MM-DD-<slug>/` with a same-named Markdown file and its attachments.
-- `context/`: locally ignored project memory in `global_context.md`, session
-  transcripts and summaries in `sessions/`, and issue-specific supporting
-  documents under `<issue-number>-<issue-title-kebab-case>/` when needed.
-- `src/content/blog/`: published Astro collection; content enters it only through an explicit publication request.
-- `public/`: static assets referenced by published articles and the site.
-- `.agents/skills/` and `.claude/skills/`: synchronized project-local workflows for Codex and Claude Code.
-- `.github/workflows/deploy.yml`: GitHub Pages deployment triggered by pushes to `main`.
-
-## Instructions
-
-- GitHub Project to get the backlog: [pantagruel](https://github.com/users/pantagruel-alpha/projects/3).
-- Use [GitHub Project `pantagruel`](https://github.com/users/pantagruel-alpha/projects/3) as the canonical backlog. Tasks for this product are issues in `pantagruel-alpha/pantagruel-research`, assigned to `aprendesc` by default; use the GitHub connector first and `gh` only for Project operations it does not expose.
-- The local `$publish-pantagruel-article` skill governs publication, deployment, republication, and production verification. On an explicit request for a specific article, promote its canonical content from `docs/` to the Astro collection, validate it, publish through `develop` and `main`, and verify the deployment.
-- The local `$linkedin-announce-pantagruel-article` skill governs LinkedIn announcements for published articles. Prepare or rehearse the post as requested; publish only after an immediate final confirmation of the reviewed post.
+# Change log
