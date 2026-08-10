@@ -2,7 +2,7 @@
 title: "El perceptrón de Rosenblatt: el primer ladrillo del aprendizaje automático"
 description: "Artículo de prueba. Un recorrido conceptual por el perceptrón de Frank Rosenblatt (1958): su modelo, la regla de aprendizaje, el teorema de convergencia y sus límites frente a problemas no lineales."
 pubDate: "Jul 13 2026"
-heroImage: "/post_img.webp"
+heroImage: "/articles/perceptron-rosenblatt/post_img.webp"
 tags: ["machine-learning", "perceptron", "historia", "prueba"]
 badge: "PRUEBA"
 ---

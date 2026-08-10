@@ -7,8 +7,11 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "sync:articles": "node scripts/sync-articles.mjs",
+    "prebuild": "npm run sync:articles",
     "build": "astro build",
     "preview": "astro preview",
+    "test": "node --test tests/article-publication/*.test.mjs",
     "astro": "astro",
     "postinstall": "patch-package"
   },
@@ -25,6 +28,8 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
-    "patch-package": "^8.0.1"
+    "patch-package": "^8.0.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.4"
   }
 }

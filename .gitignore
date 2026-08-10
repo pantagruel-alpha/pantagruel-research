@@ -21,6 +21,10 @@ pnpm-debug.log*
 # Astro
 .astro/
 
+# Generated article projection
+/src/content/blog/
+/public/articles/
+
 # Committed agent/publishing guides (override global git ignore)
 !AGENTS.md
 !CLAUDE.md

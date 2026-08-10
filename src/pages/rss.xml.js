@@ -1,19 +1,23 @@
 import rss from "@astrojs/rss";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../config";
 import { getCollection } from "astro:content";
+import createSlug from "../lib/createSlug";
 
-export async function GET(context) {
+export async function GET() {
   const blog = await getCollection("blog");
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   return rss({
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    site: import.meta.env.SITE,
+    site: new URL(`${base}/`, import.meta.env.SITE),
     items: blog.map((post) => ({
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
-      link: `/blog/${post.slug}/`,
+      link: new URL(
+        `${base}/blog/${createSlug(post.data.title, post.slug)}/`,
+        import.meta.env.SITE,
+      ).href,
     })),
   });
 }
- 

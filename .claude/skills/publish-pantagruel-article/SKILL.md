@@ -1,96 +1,96 @@
 ---
 name: publish-pantagruel-article
-description: Publish, deploy, republish, or verify one Pantagruel Research article by promoting its canonical Markdown and attachments from docs/ into the Astro site and deploying through develop and main. Use when the user explicitly asks to make a named article live, requests a production publication check, or asks how the publication workflow works.
+description: Prepare, preview, publish, republish, or verify one Pantagruel Research article through its article branch, local develop preview, explicit approval, and main deployment to GitHub Pages. Use when the user asks to preview a named article, make it live, check its production publication, or explain the publication workflow.
 ---
 
 # Publicar un artículo de Pantagruel Research
 
-## Principios
+## Explicar el flujo de forma didáctica
 
-- Tratar `docs/` como fuente de verdad editorial y `src/content/blog/` como contenido publicado.
-- Publicar únicamente tras una petición explícita del usuario.
-- Exigir un artículo concreto e inequívoco de `docs/`; si falta o hay varias coincidencias, pedir que lo identifique.
-- Ejecutar el flujo completo hasta producción cuando el usuario pida publicar, salvo que limite expresamente el alcance.
-- Conservar cambios ajenos y no incluirlos en commits, merges ni pushes.
-- Recordar que solo un push a `main` despliega; trabajar en `docs/` o `develop` no publica.
+Cuando el usuario pregunte cómo se publica, explicar antes de actuar y no
+modificar ramas, abrir merges, desplegar ni publicar nada. Adaptar el detalle a
+su nivel y presentar el recorrido en este orden:
 
-## Preparar la publicación
+1. **Desarrollo**: cada artículo tiene una issue, una rama
+   `article/<issue-number>-<short-kebab-name>` creada desde `develop` y una sola
+   carpeta canónica `docs/YYYY-MM-DD-<slug>/` con su Markdown y adjuntos.
+2. **Pre local**: al integrar la rama en `develop`, ejecutar pruebas y build,
+   iniciar la preview y facilitar la URL local exacta. Aclarar que `develop` no
+   publica nada en Internet.
+3. **Revisión**: el usuario inspecciona el artículo. Si solicita correcciones,
+   volver a la misma rama del artículo, repetir la integración y generar una
+   nueva preview; cualquier aprobación anterior queda invalidada.
+4. **Producción**: solo tras la aprobación explícita de la preview vigente,
+   integrar `develop` en `main`; GitHub Pages despliega y después se verifica la
+   URL pública exacta.
+5. **Difusión**: explicar LinkedIn y X como pasos posteriores, opcionales e
+   independientes, cada uno con su propia skill y confirmación final.
 
-1. Localizar `docs/YYYY-MM-DD-<slug>/YYYY-MM-DD-<slug>.md` y confirmar que carpeta y Markdown tienen el mismo nombre.
-2. Revisar el estado y las ramas con `git status --short --branch`, `git branch -vv` y `git fetch origin`.
-3. Detenerse si cambios no relacionados impiden cambiar de rama, construir o aislar el commit con seguridad.
-4. Actualizar `develop` mediante fast-forward antes de copiar contenido:
+Comenzar con un resumen sencillo como
+`rama del artículo → develop/preview local → aprobación → main/producción`.
+Definir cualquier término Git necesario, mostrar los comandos y URLs útiles
+junto a la fase correspondiente y terminar indicando el estado actual y cuál
+sería la siguiente decisión del usuario. No confundir la explicación con una
+autorización para ejecutar el flujo.
 
-```bash
-git checkout develop
-git pull --ff-only origin develop
-```
+## Respetar las fronteras
 
-5. Validar el frontmatter contra `src/content/config.ts`:
-   - `title`, `description` y `pubDate` son obligatorios.
-   - Mantener `pubDate` en formato `Mmm DD YYYY`.
-   - `updatedDate`, `heroImage`, `badge` y `tags` son opcionales.
-   - No repetir tags dentro del artículo.
-6. Confirmar que no se usan bloques `$$...$$`; el sitio no tiene renderizado LaTeX.
-7. Identificar todos los adjuntos locales referenciados. Una ruta raíz como `/imagen.webp` corresponde a `public/imagen.webp`.
-8. Detectar colisiones antes de copiar:
-   - Si el Markdown de destino ya existe, sobrescribirlo solo cuando represente el mismo artículo.
-   - Si un adjunto de `public/` ya existe con contenido diferente, detenerse y pedir una decisión de nombre; no sobrescribirlo silenciosamente.
+- Tratar `docs/YYYY-MM-DD-<slug>/` como única fuente editorial. No editar ni versionar manualmente sus proyecciones en `src/content/blog/` o `public/`.
+- Exigir para cada artículo una issue propia de `documental-contribution` y mantener la relación 1:1 con su rama `article/<issue-number>-<short-kebab-name>`, creada desde `develop` y limitada a un artículo.
+- Usar `develop` únicamente para construir y servir una preview local. No desplegar pre ni introducir servicios o estados adicionales.
+- Integrar `develop` en `main` solo después de que el usuario apruebe explícitamente la preview actual. Un permiso general para publicar no sustituye esa aprobación posterior.
+- Detener el recorrido ante cualquier fallo y comunicarlo sin afirmar que la etapa terminó.
+- Conservar cambios ajenos y excluirlos de commits, merges y pushes.
 
-## Promover y validar
+## Preparar e integrar el artículo
 
-1. Copiar el Markdown a `src/content/blog/<slug>.md`, omitiendo por defecto el prefijo de fecha del nombre de archivo.
-2. Copiar a `public/` todos los adjuntos referenciados.
-3. Instalar dependencias con `npm ci` si todavía no están disponibles.
-4. Ejecutar:
+1. Resolver un artículo concreto e inequívoco. Exigir que carpeta y Markdown compartan `YYYY-MM-DD-<slug>` y que los adjuntos permanezcan en esa carpeta.
+2. Revisar el estado, actualizar referencias remotas y confirmar que la issue, la rama y el artículo mantienen trazabilidad 1:1.
+3. Inspeccionar `git diff --name-status origin/develop...HEAD`. Exigir que todas las rutas pertenezcan a una única carpeta canónica `docs/YYYY-MM-DD-<slug>/`; rechazar más carpetas de artículo o cualquier cambio no relacionado.
+4. Validar el Markdown y sus adjuntos con las pruebas y comandos vigentes del repositorio. No reproducir manualmente la lógica del generador.
+5. Integrar la rama del artículo en `develop` mediante el mecanismo habitual del repositorio, sin publicar `main`.
 
-```bash
-npm run build
-git diff --check
-```
+## Servir la preview local
 
-5. Inspeccionar el diff y confirmar que:
-   - El artículo publicado coincide con su fuente en `docs/`.
-   - Los adjuntos requeridos están presentes.
-   - No hay cambios ajenos.
-   - El build generó la página esperada. Con `GENERATE_SLUG_FROM_TITLE = true`, la URL del artículo se deriva de `title`, no del nombre del archivo.
-
-## Publicar
-
-1. Añadir únicamente el Markdown publicado y sus adjuntos mediante rutas explícitas:
+1. Activar `develop` actualizado e instalar dependencias con `npm ci` cuando sea necesario.
+2. Ejecutar las pruebas de publicación, `npm run build` y `git diff --check`. El build debe generar desde `docs/` las superficies de Astro y dejar la proyección idéntica a la fuente canónica.
+3. Resolver la ruta realmente construida del artículo en `dist/blog/<slug>/index.html`; no deducirla solo del nombre del archivo porque puede derivarse del título.
+4. Iniciar la preview desde `develop`:
 
 ```bash
-git add -- src/content/blog/<slug>.md public/<adjunto-1> public/<adjunto-n>
+npm run preview -- --host 127.0.0.1
 ```
 
-2. Crear el commit en `develop`:
-
-```bash
-git commit -m "content: publicar <título>"
-git push origin develop
-```
-
-3. No crear un commit vacío si el artículo ya está actualizado. Comprobar en ese caso si `main` aún necesita recibir commits de `develop`.
-4. Desplegar desde `main`:
-
-```bash
-git checkout main
-git pull --ff-only origin main
-git merge develop --no-edit
-git push origin main
-git checkout develop
-```
-
-5. Confirmar al final que `develop` está activo y que el árbol de trabajo conserva intactos los cambios no relacionados.
-
-## Verificar producción
-
-1. Esperar a que el workflow `Deploy to GitHub Pages` asociado al push de `main` finalice.
-2. Considerar publicada la entrada solo si el workflow termina correctamente.
-3. Verificar, cuando sea posible, la página bajo:
+5. Comprobar una respuesta HTTP correcta y comunicar la URL exacta:
 
 ```text
-https://pantagruel-alpha.github.io/pantagruel-research/blog/<slug-del-title>
+http://127.0.0.1:4321/pantagruel-research/blog/<slug>/
 ```
 
-4. Informar del artículo, commits o ramas publicados, resultado del workflow y URL final. Si el deploy falla, comunicar el fallo y diagnosticarlo; no afirmar que el artículo está en producción.
+6. Mantener producción intacta y solicitar la aprobación explícita de esa preview antes de continuar.
+
+## Corregir tras la preview
+
+1. Volver a la misma `article/<issue-number>-<short-kebab-name>` e incorporar en ella el `develop` vigente.
+2. Modificar únicamente el Markdown canónico o sus adjuntos en `docs/`.
+3. Reintegrar la rama en `develop` y repetir build, validaciones, preview y comunicación de la URL exacta.
+4. Considerar caducada cualquier aprobación anterior cuando cambie el artículo; solicitar otra aprobación sobre la nueva preview.
+
+## Publicar en producción
+
+1. Confirmar que la aprobación explícita corresponde al contenido actualmente validado en `develop` y registrar el commit aprobado.
+2. Integrar `develop` en `main` sin alterar ni omitir contenido ajeno de ninguna rama. Empujar `main` solo si todas las validaciones siguen pasando.
+3. Esperar al workflow `Deploy to GitHub Pages` asociado al commit de `main` y exigir conclusión satisfactoria.
+4. Resolver y consultar la URL online exacta del mismo slug:
+
+```text
+https://pantagruel-alpha.github.io/pantagruel-research/blog/<slug>/
+```
+
+5. Verificar respuesta HTTP correcta y que la página corresponde al artículo aprobado. Informar commits, resultado del workflow y URL final.
+6. Si el despliegue o la comprobación falla, diagnosticar y comunicar el fallo; no declarar el artículo publicado.
+
+## Mantener separada la difusión
+
+- No preparar ni publicar LinkedIn o X como efecto lateral de este flujo.
+- Tratar cada red con su propia skill y confirmación final, y solo después de verificar producción.
