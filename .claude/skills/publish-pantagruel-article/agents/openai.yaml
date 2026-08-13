@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Pantagruel Article"
+  short_description: "Explica, previsualiza y publica artículos"
+  default_prompt: "Usa $publish-pantagruel-article para explicar claramente el flujo o para previsualizar o publicar el artículo indicado."
