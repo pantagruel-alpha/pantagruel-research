@@ -1,4 +1,0 @@
-interface:
-  display_name: "LinkedIn Article Announcement"
-  short_description: "Invita a leer un artículo en LinkedIn"
-  default_prompt: "Usa $linkedin-announce-pantagruel-article para preparar una invitación breve y natural con imagen y enlace al artículo indicado."

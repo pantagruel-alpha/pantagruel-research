@@ -24,7 +24,8 @@ su nivel y presentar el recorrido en este orden:
    integrar `develop` en `main`; GitHub Pages despliega y después se verifica la
    URL pública exacta.
 5. **Difusión**: explicar LinkedIn y X como pasos posteriores, opcionales e
-   independientes, cada uno con su propia skill y confirmación final.
+   independientes, gobernados por la skill global
+   `$pantagruel-research-social-announce` y con confirmación final por red.
 
 Comenzar con un resumen sencillo como
 `rama del artículo → develop/preview local → aprobación → main/producción`.
@@ -93,4 +94,5 @@ https://pantagruel-alpha.github.io/pantagruel-research/blog/<slug>/
 ## Mantener separada la difusión
 
 - No preparar ni publicar LinkedIn o X como efecto lateral de este flujo.
-- Tratar cada red con su propia skill y confirmación final, y solo después de verificar producción.
+- Usar `$pantagruel-research-social-announce` y exigir confirmación final por
+  red, siempre después de verificar producción.
