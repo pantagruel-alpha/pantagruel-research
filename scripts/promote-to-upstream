@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Uso:
+  scripts/promote-to-upstream <rama-upstream-existente> [source-ref] [base-upstream]
+
+Prepara una promocion squash local desde source-ref (develop por defecto) hacia
+una rama YA EXISTENTE de upstream. No hace fetch, no cambia el checkout y no
+hace push.
+EOF
+}
+normalize_remote() { local u="${1:-}"; u="${u%.git}"; u="${u#https://}"; u="${u#http://}"; u="${u#ssh://}"; u="${u#*@}"; u="${u/:/\/}"; u="$(printf '%s' "$u" | sed -E 's#^([a-zA-Z0-9.]+\.[a-z]+)-[A-Za-z0-9_-]+/#\1/#')"; printf '%s' "$u" | tr 'A-Z' 'a-z'; }
+fail() { echo "Promocion no preparada: $*" >&2; exit 1; }
+[[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && { usage; exit 0; }
+[[ $# -ge 1 && $# -le 3 ]] || { usage >&2; exit 2; }
+target_branch="$1"; source_ref="${2:-develop}"; target_ref="refs/remotes/upstream/$target_branch"; base_branch="${3:-}"; publication_branch="publish/$target_branch"; publication_ref="refs/heads/$publication_branch"
+origin_url="$(git remote get-url origin 2>/dev/null)" || fail "falta el remoto origin."
+upstream_url="$(git remote get-url upstream 2>/dev/null)" || fail "falta el remoto upstream."
+[[ "$(normalize_remote "$origin_url")" != "$(normalize_remote "$upstream_url")" ]] || fail "origin y upstream son el mismo repositorio; usa un merge o PR normal."
+git rev-parse --verify --quiet "${source_ref}^{commit}" >/dev/null || fail "no existe el source ref '$source_ref'."
+git rev-parse --verify --quiet "${target_ref}^{commit}" >/dev/null || fail "no existe '$target_ref'. Jira/Sherpa debe crear primero la rama corporativa y despues debes ejecutar 'git fetch upstream'."
+source_oid="$(git rev-parse "${source_ref}^{commit}")"; target_oid="$(git rev-parse "${target_ref}^{commit}")"
+if [[ -n "$base_branch" ]]; then base_ref="refs/remotes/upstream/$base_branch"; elif git symbolic-ref --quiet refs/remotes/upstream/HEAD >/dev/null; then base_ref="$(git symbolic-ref --quiet refs/remotes/upstream/HEAD)"; elif git show-ref --verify --quiet refs/remotes/upstream/main; then base_ref="refs/remotes/upstream/main"; elif git show-ref --verify --quiet refs/remotes/upstream/master; then base_ref="refs/remotes/upstream/master"; else fail "no se puede determinar la rama base de upstream; indicala como tercer argumento."; fi
+git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null || fail "no existe la base corporativa '$base_ref'."
+base_oid="$(git merge-base "$target_oid" "$base_ref")" || fail "la rama corporativa no comparte historia con '$base_ref'."
+private_paths=(context AGENTS.md CLAUDE.md .githooks scripts/promote-to-upstream scripts/prepare-upstream-branch)
+if git ls-tree -r --name-only "$target_oid" -- "${private_paths[@]}" | grep -q .; then fail "la rama corporativa ya contiene rutas privadas; requiere revision manual."; fi
+source_index="$(mktemp "${TMPDIR:-/tmp}/promote-upstream-source.XXXXXX")"; merge_index="$(mktemp "${TMPDIR:-/tmp}/promote-upstream-merge.XXXXXX")"; cleanup() { rm -f "$source_index" "$merge_index"; }; trap cleanup EXIT; rm -f "$source_index" "$merge_index"
+GIT_INDEX_FILE="$source_index" git read-tree "$source_oid"
+for path in "${private_paths[@]}"; do GIT_INDEX_FILE="$source_index" git rm -r --cached --ignore-unmatch -q -- "$path"; done
+public_tree="$(GIT_INDEX_FILE="$source_index" git write-tree)"
+for path in "${private_paths[@]}"; do if git ls-tree -r --name-only "$public_tree" -- "$path" | grep -q .; then fail "la ruta privada '$path' sobrevivio al filtrado."; fi; done
+GIT_INDEX_FILE="$merge_index" git read-tree -m "$base_oid" "$target_oid" "$public_tree"
+if GIT_INDEX_FILE="$merge_index" git ls-files -u | grep -q .; then fail "la promocion tiene conflictos con la rama corporativa; requiere revision manual."; fi
+promotion_tree="$(GIT_INDEX_FILE="$merge_index" git write-tree)"
+[[ "$promotion_tree" != "$(git rev-parse "${target_oid}^{tree}")" ]] || fail "no hay cambios publicables entre '$source_ref' y '$target_ref'."
+publication_oid="$(printf 'chore(upstream): promote %s to %s\n' "$source_ref" "$target_branch" | git commit-tree "$promotion_tree" -p "$target_oid")"
+if git worktree list --porcelain | grep -Fxq "branch $publication_ref"; then fail "'$publication_branch' esta activa en un worktree; retirala antes de regenerar la promocion."; fi
+git update-ref "$publication_ref" "$publication_oid"; git diff --check "$target_oid" "$publication_oid"
+cat <<EOF
+Promocion preparada localmente.
+  Fuente:            $source_ref ($source_oid)
+  Base corporativa:  $base_ref ($base_oid)
+  Destino existente: upstream/$target_branch ($target_oid)
+  Rama local:        $publication_branch ($publication_oid)
+
+Revisa: git diff upstream/$target_branch...$publication_branch
+Publica, previa autorizacion: git push upstream $publication_branch:$target_branch
+EOF
+

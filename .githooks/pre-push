@@ -60,6 +60,7 @@ if [[ "$guard_applies" -eq 1 ]]; then
     AGENTS.md
     CLAUDE.md
     .githooks
+    scripts/promote-to-upstream
     scripts/prepare-upstream-branch
   )
   zero_oid="0000000000000000000000000000000000000000"
@@ -78,7 +79,7 @@ if [[ "$guard_applies" -eq 1 ]]; then
       if git diff-tree --no-commit-id --name-only -r --root "$commit" -- "${private_paths[@]}" | grep -q .; then
         echo "Push a upstream bloqueado: $local_ref introduce rutas personales en el commit $commit." >&2
         echo "Cuando origin y upstream son distintos, el contenido personal vive solo en origin." >&2
-        echo "Prepara un parche limpio con scripts/prepare-upstream-branch." >&2
+        echo "Prepara la promocion local con scripts/promote-to-upstream." >&2
         exit 1
       fi
     done < <(git rev-list "$range")
