@@ -25,7 +25,7 @@ source_oid="$(git rev-parse "${source_ref}^{commit}")"; target_oid="$(git rev-pa
 if [[ -n "$base_branch" ]]; then base_ref="refs/remotes/upstream/$base_branch"; elif git symbolic-ref --quiet refs/remotes/upstream/HEAD >/dev/null; then base_ref="$(git symbolic-ref --quiet refs/remotes/upstream/HEAD)"; elif git show-ref --verify --quiet refs/remotes/upstream/main; then base_ref="refs/remotes/upstream/main"; elif git show-ref --verify --quiet refs/remotes/upstream/master; then base_ref="refs/remotes/upstream/master"; else fail "no se puede determinar la rama base de upstream; indicala como tercer argumento."; fi
 git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null || fail "no existe la base corporativa '$base_ref'."
 base_oid="$(git merge-base "$target_oid" "$base_ref")" || fail "la rama corporativa no comparte historia con '$base_ref'."
-private_paths=(context AGENTS.md CLAUDE.md .githooks scripts/promote-to-upstream scripts/prepare-upstream-branch)
+private_paths=(context AGENTS.md CLAUDE.md .githooks .worktreelink scripts/promote-to-upstream scripts/prepare-upstream-branch)
 if git ls-tree -r --name-only "$target_oid" -- "${private_paths[@]}" | grep -q .; then fail "la rama corporativa ya contiene rutas privadas; requiere revision manual."; fi
 source_index="$(mktemp "${TMPDIR:-/tmp}/promote-upstream-source.XXXXXX")"; merge_index="$(mktemp "${TMPDIR:-/tmp}/promote-upstream-merge.XXXXXX")"; cleanup() { rm -f "$source_index" "$merge_index"; }; trap cleanup EXIT; rm -f "$source_index" "$merge_index"
 GIT_INDEX_FILE="$source_index" git read-tree "$source_oid"

@@ -16,3 +16,41 @@ if git config --get filter.lfs.clean >/dev/null 2>&1; then
   git lfs post-checkout "$@"
 fi
 
+
+# Enlaces de estado local al crear un worktree.
+#
+# `git worktree add` solo materializa contenido rastreado: lo ignorado (.env,
+# datasets) se queda en el checkout principal y el codigo no arranca. Aqui se
+# enlazan las rutas declaradas en `.worktreelink`, que se lee del checkout
+# principal para que funcione este o no versionado.
+#
+# Se enlaza y no se copia porque los datasets llegan a cientos de gigas. El
+# entorno virtual nunca se enlaza: al ser un paquete instalable en modo
+# editable, importaria el codigo del checkout principal en vez del de la rama.
+
+if [ "${3:-0}" = "1" ]; then
+  main_wt="$(git worktree list --porcelain | sed -n '1s/^worktree //p')"
+  manifiesto="$main_wt/.worktreelink"
+
+  if [ -n "$main_wt" ] && [ "$main_wt" != "$PWD" ] && [ -f "$manifiesto" ]; then
+    while IFS= read -r linea || [ -n "$linea" ]; do
+      patron="$(printf '%s' "${linea%%#*}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      [ -n "$patron" ] || continue
+
+      for origen in "$main_wt"/$patron; do
+        [ -e "$origen" ] || continue
+        ruta="${origen#"$main_wt"/}"
+        if [ -e "$ruta" ] || [ -L "$ruta" ]; then continue; fi
+
+        mkdir -p "$(dirname "$ruta")"
+        ln -s "$origen" "$ruta" && echo "  enlazado  $ruta" >&2
+      done
+    done < "$manifiesto"
+  fi
+
+  if [ -f uv.lock ] && command -v uv >/dev/null 2>&1; then
+    echo "  sincronizando entorno..." >&2
+    uv sync --quiet || echo "  aviso: 'uv sync' fallo; ejecutalo a mano" >&2
+  fi
+fi
+

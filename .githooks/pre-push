@@ -60,6 +60,7 @@ if [[ "$guard_applies" -eq 1 ]]; then
     AGENTS.md
     CLAUDE.md
     .githooks
+    .worktreelink
     scripts/promote-to-upstream
     scripts/prepare-upstream-branch
   )
