@@ -55,6 +55,8 @@ breves y naturales con tono académico-profesional. Cada anuncio contiene el
 enlace exacto al artículo y una única imagen relevante con texto alternativo.
 Toda publicación externa exige confirmación final independiente por red.
 
+**Topología Git del proyecto.** `origin` es el remoto personal de desarrollo y `origin/develop` su rama de integración; `upstream` es el remoto estable y su rama por defecto (`main` o `master`) es la referencia de publicación. `context/`, `AGENTS.md` y `CLAUDE.md` se versionan normalmente en `origin`. Si ambas URLs coinciden no existe frontera de privacidad; si difieren, el hook versionado impide que esas rutas y las herramientas personales alcancen `upstream`. El trabajo ordinario se integra en `origin/develop`; la publicación se prepara como un parche limpio y se aplica a una rama oficial del repositorio `upstream`. En proyectos Inditex, Jira y Sherpa crean esa rama y su PR directamente en `upstream`: nunca se crea ni se publica primero en `origin`. Tras integrar, la rama estable de `upstream` se sincroniza de vuelta en `origin/develop`.
+
 # Change log
 
 - 2026-08-16 — [#1 — Automatizar la publicación de Pantagruel Research](context/issues/1-automate-pantagruel-research-publication.md): la difusión en LinkedIn y X se consolidó en una única skill global, manteniendo copy y controles de publicación específicos por red.
