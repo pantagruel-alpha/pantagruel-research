@@ -9,17 +9,21 @@ set -euo pipefail
 # herramientas, temporales y artefactos regenerables que no son la obra.
 #
 # Este hook bloquea el residuo conocido. No juzga por tamano.
+#
+# Nota sobre extensiones: se evitan deliberadamente patrones genericos como
+# '*.log' o '*.out', porque en algunos proyectos son evidencia legitima
+# (por ejemplo los 'server.log' de qa-artifacts en pantagruel-alpha).
+# Solo se bloquean extensiones inequivocamente regenerables.
 
 residue_patterns=(
   '^\.playwright-mcp/'
   '^tmp/'
   '^out/'
-  '^\.DS_Store$'
-  '/\.DS_Store$'
+  '\.DS_Store$'
   '__pycache__/'
-  '\.(aux|log|out|toc|synctex\.gz|fls|fdb_latexmk|nav|snm|bbl|blg|vrb)$'
-  '^wandb/'
   '\.ipynb_checkpoints/'
+  '^wandb/'
+  '\.(aux|fls|fdb_latexmk|synctex\.gz|nav|snm|bbl|blg|vrb|toc)$'
 )
 
 staged="$(git diff --cached --name-only --diff-filter=ACMR)"
@@ -42,4 +46,5 @@ if [[ -n "${blocked//[$'\n']/}" ]]; then
 fi
 
 exit 0
+
 
