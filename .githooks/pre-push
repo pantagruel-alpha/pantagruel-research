@@ -1,16 +1,38 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Guardian de publicacion hacia upstream.
+#
+# Bloquea cualquier push a `upstream` cuya historia saliente introduzca rutas
+# personales, cuando `origin` y `upstream` son repositorios distintos.
+#
+# La comparacion de remotos se hace sobre URLs NORMALIZADAS. Un mismo
+# repositorio puede escribirse de varias formas equivalentes
+# (git@github.com-alias:usuario/repo.git y https://github.com/usuario/repo.git),
+# y compararlas como texto plano daria una separacion falsa.
+
+normalize_remote() {
+  local u="${1:-}"
+  u="${u%.git}"
+  u="${u#https://}"; u="${u#http://}"; u="${u#ssh://}"
+  u="${u#*@}"
+  u="${u/:/\/}"
+  u="$(printf '%s' "$u" | sed -E 's#^([a-zA-Z0-9.]+\.[a-z]+)-[A-Za-z0-9_-]+/#\1/#')"
+  printf '%s' "$u" | tr 'A-Z' 'a-z'
+}
+
 remote_name="$1"
 remote_url="$2"
-origin_url="$(git remote get-url origin)"
-upstream_url="$(git remote get-url upstream)"
+origin_url="$(git remote get-url origin 2>/dev/null || true)"
+upstream_url="$(git remote get-url upstream 2>/dev/null || true)"
 
-if [[ "$remote_name" != "upstream" && "$remote_url" != "$upstream_url" ]]; then
+# Solo interviene si el destino es upstream.
+if [[ "$remote_name" != "upstream" && "$(normalize_remote "$remote_url")" != "$(normalize_remote "$upstream_url")" ]]; then
   exit 0
 fi
 
-if [[ "$origin_url" == "$upstream_url" ]]; then
+# Si origin y upstream son el mismo repositorio, no hay frontera que proteger.
+if [[ "$(normalize_remote "$origin_url")" == "$(normalize_remote "$upstream_url")" ]]; then
   exit 0
 fi
 
@@ -18,7 +40,7 @@ private_paths=(
   context
   AGENTS.md
   CLAUDE.md
-  .githooks/pre-push
+  .githooks
   scripts/prepare-upstream-branch
 )
 zero_oid="0000000000000000000000000000000000000000"
@@ -35,9 +57,9 @@ while read -r local_ref local_oid remote_ref remote_oid; do
 
   while read -r commit; do
     if git diff-tree --no-commit-id --name-only -r --root "$commit" -- "${private_paths[@]}" | grep -q .; then
-      echo "Blocked push to upstream: $local_ref includes personal paths in commit $commit." >&2
-      echo "Personal paths belong only in origin when origin and upstream differ." >&2
-      echo "Prepare a clean patch with scripts/prepare-upstream-branch." >&2
+      echo "Push a upstream bloqueado: $local_ref introduce rutas personales en el commit $commit." >&2
+      echo "Cuando origin y upstream son distintos, el contenido personal vive solo en origin." >&2
+      echo "Prepara un parche limpio con scripts/prepare-upstream-branch." >&2
       blocked=1
       break
     fi
@@ -45,3 +67,4 @@ while read -r local_ref local_oid remote_ref remote_oid; do
 done
 
 exit "$blocked"
+

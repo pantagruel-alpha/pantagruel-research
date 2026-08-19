@@ -1,3 +1,10 @@
+## Remotos de trabajo
+
+- `origin`: `git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git`
+- `upstream`: `git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git`
+- Ambos apuntan al mismo repositorio, de modo que no existe frontera de privacidad y todo el contenido se versiona en él.
+
+
 # Context
 
 Pantagruel Research es el espacio editorial y blog técnico de Pantagruel Alpha
@@ -54,6 +61,8 @@ LinkedIn, X o ambas redes, solo después de verificar producción, invitaciones
 breves y naturales con tono académico-profesional. Cada anuncio contiene el
 enlace exacto al artículo y una única imagen relevante con texto alternativo.
 Toda publicación externa exige confirmación final independiente por red.
+
+**Topología Git del proyecto.** `origin` es el remoto personal de desarrollo y `origin/develop` su rama de integración; `upstream` es el remoto estable y su rama por defecto (`main` o `master`) es la referencia de publicación. `context/`, `AGENTS.md` y `CLAUDE.md` se versionan normalmente en `origin`. Si ambas URLs coinciden no existe frontera de privacidad; si difieren, el hook versionado impide que esas rutas y las herramientas personales alcancen `upstream`. El trabajo ordinario se integra en `origin/develop`; la publicación se prepara como un parche limpio y se aplica a una rama oficial del repositorio `upstream`. En proyectos Inditex, Jira y Sherpa crean esa rama y su PR directamente en `upstream`: nunca se crea ni se publica primero en `origin`. Tras integrar, la rama estable de `upstream` se sincroniza de vuelta en `origin/develop`.
 
 # Change log
 

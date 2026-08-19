@@ -1,7 +1,8 @@
 ## Remotos de trabajo
-- `origin`: git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git
-- `upstream`: git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git
-- Si `origin` y `upstream` apuntan al mismo remoto, no hay separación de privacidad.
+
+- `origin`: `git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git`
+- `upstream`: `git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git`
+- Ambos apuntan al mismo repositorio, de modo que no existe frontera de privacidad y todo el contenido se versiona en él.
 
 
 # Context
