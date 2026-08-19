@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Delegacion a Git LFS.
+#
+# `core.hooksPath` apunta a `.githooks/` y sustituye por completo a
+# `.git/hooks`, donde Git LFS instala sus propios hooks. Este fichero los
+# reemplaza delegando explicitamente, de modo que LFS siga materializando y
+# limpiando sus objetos al cambiar de rama, commitear o fusionar.
+
+if git config --get filter.lfs.clean >/dev/null 2>&1; then
+  if ! command -v git-lfs >/dev/null 2>&1; then
+    echo "Este repositorio usa Git LFS pero 'git-lfs' no esta en el PATH." >&2
+    exit 2
+  fi
+  git lfs post-merge "$@"
+fi
+
