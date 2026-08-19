@@ -1,3 +1,9 @@
+## Remotos de trabajo
+- `origin`: git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git
+- `upstream`: git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git
+- Si `origin` y `upstream` apuntan al mismo remoto, no hay separación de privacidad.
+
+
 # Context
 
 Pantagruel Research es el espacio editorial y blog técnico de Pantagruel Alpha
