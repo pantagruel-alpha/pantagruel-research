@@ -28,3 +28,8 @@ pnpm-debug.log*
 # Committed agent/publishing guides (override global git ignore)
 !AGENTS.md
 !CLAUDE.md
+
+# Residuo de herramientas y temporales: nunca son contenido
+/.playwright-mcp/
+/tmp/
+/out/

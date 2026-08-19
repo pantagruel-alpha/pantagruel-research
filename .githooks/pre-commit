@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Guardian de contenido.
+#
+# En un repositorio de contenido la obra se versiona siempre, por grande que
+# sea: libros, fuentes originales, apuntes, notas y sus salidas publicadas.
+# Lo que nunca se versiona es el residuo: material de trabajo de las
+# herramientas, temporales y artefactos regenerables que no son la obra.
+#
+# Este hook bloquea el residuo conocido. No juzga por tamano.
+#
+# Nota sobre extensiones: se evitan deliberadamente patrones genericos como
+# '*.log' o '*.out', porque en algunos proyectos son evidencia legitima
+# (por ejemplo los 'server.log' de qa-artifacts en pantagruel-alpha).
+# Solo se bloquean extensiones inequivocamente regenerables.
+
+residue_patterns=(
+  '^\.playwright-mcp/'
+  '^tmp/'
+  '^out/'
+  '\.DS_Store$'
+  '__pycache__/'
+  '\.ipynb_checkpoints/'
+  '^wandb/'
+  '\.(aux|fls|fdb_latexmk|synctex\.gz|nav|snm|bbl|blg|vrb|toc)$'
+)
+
+staged="$(git diff --cached --name-only --diff-filter=ACMR)"
+[[ -z "$staged" ]] && exit 0
+
+blocked=""
+for pattern in "${residue_patterns[@]}"; do
+  match="$(printf '%s\n' "$staged" | grep -E "$pattern" || true)"
+  [[ -n "$match" ]] && blocked+="$match"$'\n'
+done
+
+if [[ -n "${blocked//[$'\n']/}" ]]; then
+  echo "Commit bloqueado: hay residuo en el indice." >&2
+  echo "Estas rutas son material de trabajo, no contenido del repositorio:" >&2
+  printf '%s' "$blocked" | sed '/^$/d' | sed 's/^/  - /' >&2
+  echo >&2
+  echo "Quitalas del indice con 'git rm --cached <ruta>' y anadelas a .gitignore." >&2
+  echo "Si de verdad forman parte de la obra, ajusta el patron en .githooks/pre-commit." >&2
+  exit 1
+fi
+
+exit 0
+
+

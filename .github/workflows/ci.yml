@@ -1,0 +1,116 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Install dependencies
+        run: npm ci
+      - name: Test article publication
+        run: npm test
+      - name: Build with Astro
+        run: npm run build
+      - name: Build release artifact
+        run: tar -czf pantagruel-research-site.tar.gz -C dist .
+      - name: Preserve release artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: release-assets
+          path: pantagruel-research-site.tar.gz
+          if-no-files-found: error
+      - name: Preserve Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist
+      - name: Publish quality summary
+        run: |
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          commit_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+          {
+            echo '# Quality'
+            echo
+            echo '| Field | Value |'
+            echo '| --- | --- |'
+            echo '| Result | `passed` |'
+            echo "| Commit | [\`$GITHUB_SHA\`]($commit_url) |"
+            echo "| Run | [\`$GITHUB_RUN_ID\`]($run_url) |"
+            echo '| Gates | article tests, Astro build |'
+            echo '| Artifacts | `pantagruel-research-site.tar.gz` |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Deploy Pages
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    name: Release
+    needs: [quality, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download release artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name release-assets --dir release-assets
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "release-$GITHUB_SHA" release-assets/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Pantagruel Research release $GITHUB_SHA" --generate-notes
+      - name: Publish release summary
+        run: |
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          commit_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+          release_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/release-$GITHUB_SHA"
+          {
+            echo '# Release'
+            echo
+            echo '| Field | Value |'
+            echo '| --- | --- |'
+            echo '| Result | `published` |'
+            echo "| Release | [\`release-$GITHUB_SHA\`]($release_url) |"
+            echo "| Commit | [\`$GITHUB_SHA\`]($commit_url) |"
+            echo "| Run | [\`$GITHUB_RUN_ID\`]($run_url) |"
+            echo '| Assets | `pantagruel-research-site.tar.gz` |'
+          } >> "$GITHUB_STEP_SUMMARY"

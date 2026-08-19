@@ -41,21 +41,21 @@ contratos autocontenidos viven en
 1:1 con los issues del propio repositorio. Este documento conserva dirección editorial, decisiones y
 memoria del proyecto sin duplicar el tablero.
 
-Las skills locales versionadas son parte del funcionamiento del proyecto. La
-skill de [publicación](.agents/skills/publish-pantagruel-article/SKILL.md)
+La skill local versionada de
+[publicación](.agents/skills/publish-pantagruel-article/SKILL.md)
 explica y ejecuta el recorrido rama de artículo → `develop` → preview local →
 aprobación → `main` → verificación en GitHub Pages. Cuando el usuario pregunte
 cómo publicar, debe responder de manera didáctica y ordenada, distinguir con
 claridad desarrollo, pre local y producción, mostrar las URLs relevantes y no
 ejecutar la publicación si solo se solicitó una explicación.
 
-Las skills de [LinkedIn](.agents/skills/linkedin-announce-pantagruel-article/SKILL.md)
-y [X](.agents/skills/x-announce-pantagruel-article/SKILL.md) preparan o publican,
-solo después de verificar producción, invitaciones breves y naturales con tono
-académico-profesional. Cada anuncio contiene el enlace exacto al artículo y una
-única imagen relevante con texto alternativo. Toda publicación externa exige
-confirmación final independiente. Los espejos bajo [`.claude/skills/`](.claude/skills/)
-deben permanecer idénticos para ofrecer el mismo comportamiento en Codex y
-Claude Code.
+La skill global `pantagruel-research-social-announce` prepara o publica en
+LinkedIn, X o ambas redes, solo después de verificar producción, invitaciones
+breves y naturales con tono académico-profesional. Cada anuncio contiene el
+enlace exacto al artículo y una única imagen relevante con texto alternativo.
+Toda publicación externa exige confirmación final independiente por red.
+
 
 # Change log
+
+- 2026-08-16 — [#1 — Automatizar la publicación de Pantagruel Research](context/issues/1-automate-pantagruel-research-publication.md): la difusión en LinkedIn y X se consolidó en una única skill global, manteniendo copy y controles de publicación específicos por red.
