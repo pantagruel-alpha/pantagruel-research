@@ -55,7 +55,6 @@ breves y naturales con tono académico-profesional. Cada anuncio contiene el
 enlace exacto al artículo y una única imagen relevante con texto alternativo.
 Toda publicación externa exige confirmación final independiente por red.
 
-**Topología Git del proyecto.** `origin` (`git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git`) y `upstream` (`git@github.com-pantagruel:pantagruel-alpha/pantagruel-research.git`) apuntan al mismo repositorio, de modo que no existe frontera de privacidad y todo el contenido, incluidos `context/`, `AGENTS.md` y `CLAUDE.md`, se versiona en él. `origin/develop` es la rama de integración del trabajo ordinario y la rama por defecto (`main` o `master`) la referencia estable de publicación.
 
 # Change log
 
