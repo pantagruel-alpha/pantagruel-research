@@ -16,7 +16,7 @@ normalize_remote() {
   u="${u%.git}"
   u="${u#https://}"; u="${u#http://}"; u="${u#ssh://}"
   u="${u#*@}"
-  u="${u/:/\/}"
+  u="${u/://}"
   u="$(printf '%s' "$u" | sed -E 's#^([a-zA-Z0-9.]+\.[a-z]+)-[A-Za-z0-9_-]+/#\1/#')"
   printf '%s' "$u" | tr 'A-Z' 'a-z'
 }
