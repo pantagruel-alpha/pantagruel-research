@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Delegacion a Git LFS.
-#
-# `core.hooksPath` apunta a `.githooks/` y sustituye por completo a
-# `.git/hooks`, donde Git LFS instala sus propios hooks. Este fichero los
-# reemplaza delegando explicitamente, de modo que LFS siga materializando y
-# limpiando sus objetos al cambiar de rama, commitear o fusionar.
-
+# Conserva la delegacion a Git LFS cuando core.hooksPath apunta aqui.
 if git config --get filter.lfs.clean >/dev/null 2>&1; then
   if ! command -v git-lfs >/dev/null 2>&1; then
     echo "Este repositorio usa Git LFS pero 'git-lfs' no esta en el PATH." >&2
@@ -16,41 +10,88 @@ if git config --get filter.lfs.clean >/dev/null 2>&1; then
   git lfs post-checkout "$@"
 fi
 
+crear_enlace() {
+  local origen="$1"
+  local destino="$2"
 
-# Enlaces de estado local al crear un worktree.
-#
-# `git worktree add` solo materializa contenido rastreado: lo ignorado (.env,
-# datasets) se queda en el checkout principal y el codigo no arranca. Aqui se
-# enlazan las rutas declaradas en `.worktreelink`, que se lee del checkout
-# principal para que funcione este o no versionado.
-#
-# Se enlaza y no se copia porque los datasets llegan a cientos de gigas. El
-# entorno virtual nunca se enlaza: al ser un paquete instalable en modo
-# editable, importaria el codigo del checkout principal en vez del de la rama.
+  if command -v powershell.exe >/dev/null 2>&1 && command -v cygpath >/dev/null 2>&1; then
+    local tipo="SymbolicLink"
+    [ -d "$origen" ] && tipo="Junction"
 
-if [ "${3:-0}" = "1" ]; then
-  main_wt="$(git worktree list --porcelain | sed -n '1s/^worktree //p')"
-  manifiesto="$main_wt/.worktreelink"
+    local origen_win destino_win origen_ps destino_ps
+    origen_win="$(cygpath -aw "$origen")"
+    destino_win="$(cygpath -aw "$destino")"
+    origen_ps="${origen_win//\'/\'\'}"
+    destino_ps="${destino_win//\'/\'\'}"
 
-  if [ -n "$main_wt" ] && [ "$main_wt" != "$PWD" ] && [ -f "$manifiesto" ]; then
-    while IFS= read -r linea || [ -n "$linea" ]; do
-      patron="$(printf '%s' "${linea%%#*}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-      [ -n "$patron" ] || continue
-
-      for origen in "$main_wt"/$patron; do
-        [ -e "$origen" ] || continue
-        ruta="${origen#"$main_wt"/}"
-        if [ -e "$ruta" ] || [ -L "$ruta" ]; then continue; fi
-
-        mkdir -p "$(dirname "$ruta")"
-        ln -s "$origen" "$ruta" && echo "  enlazado  $ruta" >&2
-      done
-    done < "$manifiesto"
+    powershell.exe -NoProfile -NonInteractive -Command \
+      "\$ErrorActionPreference = 'Stop'; try { New-Item -ItemType '$tipo' -Path '$destino_ps' -Target '$origen_ps' | Out-Null } catch { if ('$tipo' -ne 'SymbolicLink') { throw }; New-Item -ItemType 'HardLink' -Path '$destino_ps' -Target '$origen_ps' | Out-Null }"
+  else
+    ln -s "$origen" "$destino"
   fi
+}
 
-  if [ -f uv.lock ] && command -v uv >/dev/null 2>&1; then
+enlazar_estado_local() {
+  local main_raw main_wt current_wt manifiesto
+  main_raw="$(git worktree list --porcelain | sed -n '1s/^worktree //p')"
+  [ -n "$main_raw" ] || return 0
+
+  main_wt="$(cd "$main_raw" && pwd -P)"
+  current_wt="$(pwd -P)"
+  [ "$main_wt" != "$current_wt" ] || return 0
+
+  manifiesto="$main_wt/.worktreelink"
+  [ -f "$manifiesto" ] || return 0
+
+  local linea patron raiz glob origen ruta destino
+  while IFS= read -r linea || [ -n "$linea" ]; do
+    patron="$(printf '%s' "${linea%%#*}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    [ -n "$patron" ] || continue
+
+    raiz=0
+    case "$patron" in
+      */) raiz=1; patron="${patron%/}" ;;
+    esac
+
+    glob=0
+    case "$patron" in
+      *[*?[]*) glob=1 ;;
+    esac
+
+    if [ "$raiz" = "1" ] && [ "$glob" = "0" ]; then
+      mkdir -p "$main_wt/$patron"
+    fi
+
+    for origen in "$main_wt"/$patron; do
+      [ -e "$origen" ] || continue
+      ruta="${origen#"$main_wt"/}"
+      destino="$current_wt/$ruta"
+
+      if [ -L "$destino" ]; then
+        continue
+      fi
+
+      if [ -d "$destino" ] && [ -z "$(find "$destino" -mindepth 1 -maxdepth 1 -print -quit)" ]; then
+        rmdir "$destino"
+      elif [ -e "$destino" ]; then
+        echo "  aviso: no se enlaza '$ruta' porque ya contiene estado local" >&2
+        continue
+      fi
+
+      mkdir -p "$(dirname "$destino")"
+      crear_enlace "$origen" "$destino"
+      echo "  compartido  $ruta" >&2
+    done
+  done < "$manifiesto"
+}
+
+# El tercer argumento vale 1 después de materializar una rama o worktree.
+if [ "${3:-0}" = "1" ]; then
+  enlazar_estado_local
+
+  if [ "${WORKTREELINK_SKIP_SYNC:-0}" != "1" ] &&
+     [ -f uv.lock ] && command -v uv >/dev/null 2>&1; then
     echo "  sincronizando entorno..." >&2
     uv sync --quiet || echo "  aviso: 'uv sync' fallo; ejecutalo a mano" >&2
   fi
 fi
-

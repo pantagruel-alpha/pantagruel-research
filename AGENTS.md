@@ -59,3 +59,4 @@ Toda publicación externa exige confirmación final independiente por red.
 # Change log
 
 - 2026-08-16 — [#1 — Automatizar la publicación de Pantagruel Research](context/issues/1-automate-pantagruel-research-publication.md): la difusión en LinkedIn y X se consolidó en una única skill global, manteniendo copy y controles de publicación específicos por red.
+- 2026-08-20 — Se normalizó el trabajo con Git worktrees: `.worktreelink` comparte el estado local pesado mediante enlaces multiplataforma y mantiene el código y los entornos virtuales aislados por rama.

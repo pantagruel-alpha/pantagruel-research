@@ -1,33 +1,24 @@
-# Rutas que se enlazan al checkout principal al crear un worktree.
+# Estado local que todos los worktrees deben compartir con el checkout principal.
 #
-# `git worktree add` solo materializa contenido rastreado, asi que sin esto
-# el worktree no encuentra credenciales ni datasets y el codigo no arranca.
-# Se enlazan, no se copian: el enlace cuesta milisegundos y cero bytes, y
-# copiar es inviable cuando los datos llegan a cientos de gigas.
-#
-# Admite comodines. Las rutas que no existan se ignoran en silencio, de modo
-# que este fichero es identico en todo el portfolio.
-#
-# No se enlaza nunca: entornos virtuales (`.venv` reinstala con `uv sync`,
-# porque compartirlo importaria el codigo del checkout principal), cache de
-# tests o de compilacion, ni artefactos de build.
-#
-# Aqui solo van nombres de fichero, nunca secretos.
+# Las rutas terminadas en `/` son raices administradas: el hook las crea en el
+# checkout principal cuando no existen y enlaza el directorio completo. Las
+# rutas con comodines y los ficheros solo se enlazan cuando ya existen.
+# Nunca se incluyen contenidos ni valores secretos en este manifiesto.
 
 # Credenciales
 .env
 .env.*
-secrets
 gcp_sa_key.json
+secrets/
 
 # Datos y modelos
-data
-data-*
-models/*
-tests/data/*
-tests/models/*
+data/
+data-*/
+models/
+tests/data/
+tests/models/
 
 # Prototipos
 prototypes/*/.env
-prototypes/*/data
-prototypes/*/data-*
+prototypes/*/data/
+prototypes/*/data-*/

@@ -1,0 +1,5 @@
+* text=auto
+
+# Los hooks se ejecutan con POSIX shell también desde Git para Windows.
+/.githooks/* text eol=lf
+/.worktreelink text eol=lf

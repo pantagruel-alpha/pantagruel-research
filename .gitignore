@@ -33,3 +33,17 @@ pnpm-debug.log*
 /.playwright-mcp/
 /tmp/
 /out/
+
+# Estado local compartido entre worktrees (no versionado).
+.env
+.env.*
+gcp_sa_key.json
+secrets/
+/data/
+/data-*/
+/models/
+/tests/data/
+/tests/models/
+/prototypes/*/.env
+/prototypes/*/data/
+/prototypes/*/data-*/
