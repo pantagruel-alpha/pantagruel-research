@@ -38,7 +38,7 @@ Ask rather than guess when a critical choice is unresolved.
 ## Verify production and media
 
 1. Read the canonical Markdown rather than relying on the filename or memory.
-2. Open the proposed production URL and confirm a successful response with the expected article title and content. This gate applies to every mode.
+2. Confirm that the publication completed through the `develop` → `main` pull request and its successful GitHub Pages workflow; then open the proposed production URL and confirm a successful response with the expected article title and content. This gate applies to every mode.
 3. Do not derive the URL solely from the source filename; the generated public slug may differ.
 4. Require exactly one relevant article-specific social, cover, hero, chart, or illustration. Stop if no suitable image is available or approved.
 5. Inspect the exact image visually and write alternative text that describes meaningful visible content without unsupported interpretation.

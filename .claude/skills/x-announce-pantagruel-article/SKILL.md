@@ -32,7 +32,9 @@ Before composing, resolve:
 
 1. Canonical article directory and Markdown under `docs/YYYY-MM-DD-<slug>/`.
 2. Article title, description, argument, qualifications, and language from the canonical Markdown.
-3. Exact live production URL, opened successfully and matched to the expected title.
+3. Successful `develop` → `main` pull request and GitHub Pages workflow, plus
+   an exact live production URL opened successfully and matched to the expected
+   title.
 4. Exact local image path and factual alternative text derived from visual inspection.
 5. Posting account and reply settings when using the composer.
 6. Any requested hashtags or mentions.

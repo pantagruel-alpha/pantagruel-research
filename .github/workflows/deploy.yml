@@ -1,9 +1,9 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
+  pull_request:
     branches: [main]
-  workflow_dispatch:
+    types: [opened, synchronize, reopened, ready_for_review, closed]
 
 permissions:
   contents: read
@@ -16,8 +16,11 @@ concurrency:
 
 jobs:
   build:
-    name: Build
-    if: github.ref == 'refs/heads/main'
+    name: Validate publication
+    if: >-
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.ref == 'develop' &&
+      (github.event.action != 'closed' || github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,7 +52,11 @@ jobs:
 
   deploy:
     name: Deploy
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.ref == 'develop'
     needs: build
     runs-on: ubuntu-latest
     environment:

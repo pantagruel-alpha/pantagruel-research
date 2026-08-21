@@ -21,7 +21,8 @@ su nivel y presentar el recorrido en este orden:
    volver a la misma rama del artículo, repetir la integración y generar una
    nueva preview; cualquier aprobación anterior queda invalidada.
 4. **Producción**: solo tras la aprobación explícita de la preview vigente,
-   integrar `develop` en `main`; GitHub Pages despliega y después se verifica la
+   abrir y fusionar una pull request `develop` → `main`; CI valida la PR y
+   GitHub Pages despliega después de la fusión. A continuación se verifica la
    URL pública exacta.
 5. **Difusión**: explicar LinkedIn y X como pasos posteriores, opcionales e
    independientes, cada uno con su propia skill y confirmación final.
@@ -38,7 +39,7 @@ autorización para ejecutar el flujo.
 - Tratar `docs/YYYY-MM-DD-<slug>/` como única fuente editorial. No editar ni versionar manualmente sus proyecciones en `src/content/blog/` o `public/`.
 - Exigir para cada artículo una issue propia de `documental-contribution` y mantener la relación 1:1 con su rama `article/<issue-number>-<short-kebab-name>`, creada desde `develop` y limitada a un artículo.
 - Usar `develop` únicamente para construir y servir una preview local. No desplegar pre ni introducir servicios o estados adicionales.
-- Integrar `develop` en `main` solo después de que el usuario apruebe explícitamente la preview actual. Un permiso general para publicar no sustituye esa aprobación posterior.
+- Integrar `develop` en `main` solo mediante su pull request y después de que el usuario apruebe explícitamente la preview actual. Un permiso general para publicar no sustituye esa aprobación posterior.
 - Detener el recorrido ante cualquier fallo y comunicarlo sin afirmar que la etapa terminó.
 - Conservar cambios ajenos y excluirlos de commits, merges y pushes.
 
@@ -79,8 +80,8 @@ http://127.0.0.1:4321/pantagruel-research/blog/<slug>/
 ## Publicar en producción
 
 1. Confirmar que la aprobación explícita corresponde al contenido actualmente validado en `develop` y registrar el commit aprobado.
-2. Integrar `develop` en `main` sin alterar ni omitir contenido ajeno de ninguna rama. Empujar `main` solo si todas las validaciones siguen pasando.
-3. Esperar al workflow `Deploy to GitHub Pages` asociado al commit de `main` y exigir conclusión satisfactoria.
+2. Abrir la pull request `develop` → `main` y exigir que CI valide pruebas y build. Fusionarla solo si todas las validaciones siguen pasando, sin alterar ni omitir contenido ajeno.
+3. Esperar al workflow `Deploy to GitHub Pages` asociado a la pull request fusionada y exigir conclusión satisfactoria.
 4. Resolver y consultar la URL online exacta del mismo slug:
 
 ```text
