@@ -34,6 +34,12 @@ junto a la fase correspondiente y terminar indicando el estado actual y cuál
 sería la siguiente decisión del usuario. No confundir la explicación con una
 autorización para ejecutar el flujo.
 
+El grid de aprobación de `PUBLISHING.md` es vinculante: la revisión editorial
+autoriza la preview, el usuario aprueba explícitamente la preview vigente, CI
+verde permite fusionar la PR, la verificación de producción permite preparar
+redes y cada red requiere su propia confirmación final. Un cambio editorial
+reinicia el grid desde la validación local.
+
 ## Respetar las fronteras
 
 - Tratar `docs/YYYY-MM-DD-<slug>/` como única fuente editorial. No editar ni versionar manualmente sus proyecciones en `src/content/blog/` o `public/`.

@@ -31,11 +31,14 @@ asignación y Project; este contrato es la fuente de alcance y decisiones.
 - Keep `docs/` as the sole editorial source and preserve `develop` as a local
   preview surface with no Internet deployment.
 - Document the article publication flow from article branch to verified
-  production.
+  production, including the approval grid in `PUBLISHING.md`.
 - Refine the local LinkedIn and X skills so that dissemination stays optional,
   separate, production-verified and subject to a final confirmation.
 - Keep each `.agents/skills/` publication skill byte-identical to its mirror in
   `.claude/skills/`.
+- Keep `AGENTS.md` sufficient to explain the complete article creation,
+  validation, deployment and optional-diffusion process by referring to the
+  canonical publication guide.
 
 #### Constraints
 
@@ -43,6 +46,9 @@ asignación y Project; este contrato es la fuente de alcance y decisiones.
   or a direct push to `main`.
 - Do not publish to LinkedIn or X as part of CI or without an independent final
   user confirmation.
+- Treat the approval grid in `PUBLISHING.md` as binding: a content change
+  invalidates preview approval; a failed CI blocks fusion; and absent production
+  verification blocks social preparation.
 - Do not add non-article files under `docs/`, because the synchronizer rejects
   them.
 - Preserve unrelated changes and do not modify remote state without explicit
@@ -71,13 +77,16 @@ social dissemination. Name the authoritative source and the approval gates.
 #### Table of contents
 
 1. Purpose and canonical surfaces: source of truth and branch roles.
-2. Article development: issue, branch and canonical directory requirements.
-3. Pull request and CI: the exact `develop` to `main` validation and merge
+2. Approval grid: evidence, approval owner and invalidation rules.
+3. Article development: issue, branch and canonical directory requirements.
+4. Pull request and CI: the exact `develop` to `main` validation and merge
    gate.
-4. Production verification: GitHub Pages workflow and public URL check.
-5. Social dissemination: separate, optional LinkedIn and X workflows.
+5. Production verification: GitHub Pages workflow and public URL check.
+6. Social dissemination: separate, optional LinkedIn and X workflows.
 
 ## Change log
 
 - 2026-08-21: Recreated the missing canonical contract and recorded the
   approved CI, documentation and social-skill scope.
+- 2026-08-21: Declared the approval grid as the shared gate for deployment and
+  dissemination, and made `AGENTS.md` point to the canonical guide.

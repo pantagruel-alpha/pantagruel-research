@@ -12,6 +12,21 @@ Astro y los adjuntos públicos; no se editan manualmente `src/content/blog/` ni
 única rama de producción y GitHub Pages solo se despliega tras fusionar una pull
 request de `develop` a `main`.
 
+## Grid de aprobación
+
+| Puerta | Evidencia exigida | Quién autoriza el paso siguiente |
+| --- | --- | --- |
+| Contenido canónico | Una issue, una rama y una única carpeta de artículo válida en `docs/` | Revisión editorial |
+| Preview local | `npm test`, `npm run build`, URL local y revisión de la versión vigente | Usuario, de forma explícita |
+| Pull request | PR `develop` → `main` con CI verde | Revisión e integración autorizada |
+| Producción | Workflow `Deploy to GitHub Pages` correcto y URL pública comprobada | Verificación operativa |
+| LinkedIn | URL de producción, una imagen y texto alternativo revisados | Usuario, confirmación final independiente |
+| X | URL de producción, una imagen y texto alternativo revisados | Usuario, confirmación final independiente |
+
+Un cambio de contenido posterior a la preview reinicia el grid desde la
+validación local. La difusión nunca se ejecuta como efecto lateral de CI ni del
+despliegue.
+
 ## Desarrollo del artículo
 
 1. Crear una issue documental y una rama

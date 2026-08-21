@@ -13,8 +13,8 @@ ese corpus la colección de la aplicación [Astro](src/) y los adjuntos aislados
 bajo `public/articles/`; ambas superficies son derivadas y no se editan ni
 versionan manualmente. Los comandos y dependencias viven en
 [`package.json`](package.json). El [workflow de GitHub
-Pages](.github/workflows/deploy.yml) ejecuta las pruebas y solo despliega
-`main`.
+Pages](.github/workflows/deploy.yml) valida la pull request `develop` → `main`
+y solo despliega GitHub Pages cuando esa pull request se fusiona.
 
 La dirección editorial aplica la relación 1:1 «un issue, una rama, un
 artículo». Cada artículo se define como una contribución documental propia y se
@@ -57,5 +57,24 @@ académico-profesional. Cada anuncio contiene el enlace exacto al artículo y un
 confirmación final independiente. Los espejos bajo [`.claude/skills/`](.claude/skills/)
 deben permanecer idénticos para ofrecer el mismo comportamiento en Codex y
 Claude Code.
+
+## Crear, revisar y publicar un artículo
+
+La guía operativa y el grid de aprobación canónicos están en
+[`PUBLISHING.md`](PUBLISHING.md). Cuando el usuario pregunte por el proceso,
+explicar el recorrido completo sin ejecutar acciones: issue documental → rama
+`article/<issue>-<slug>` desde `develop` → carpeta canónica
+`docs/YYYY-MM-DD-<slug>/` → `npm test` y `npm run build` → integración en
+`develop` y preview local → aprobación explícita de esa preview → pull request
+`develop` → `main` validada por CI → fusión → verificación de GitHub Pages →
+difusión social opcional.
+
+El grid no admite atajos: toda modificación editorial invalida la aprobación de
+preview; CI debe pasar antes de fusionar; producción debe verificarse antes de
+preparar una red social; y LinkedIn y X exigen, cada una, una confirmación final
+independiente. Si el usuario solo pide una explicación, no crear ramas, PRs,
+merges, despliegues ni publicaciones externas. Aplicar
+`.agents/skills/publish-pantagruel-article/` para el recorrido editorial y las
+skills específicas de LinkedIn o X para la difusión.
 
 # Change log
