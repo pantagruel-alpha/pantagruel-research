@@ -1,4 +1,0 @@
-interface:
-  display_name: "Pantagruel Research Social Announce"
-  short_description: "Anuncia artículos en LinkedIn y X"
-  default_prompt: "Usa $pantagruel-research-social-announce para preparar anuncios en LinkedIn y X del artículo indicado."
