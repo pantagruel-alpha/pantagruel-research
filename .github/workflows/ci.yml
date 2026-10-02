@@ -1,12 +1,5 @@
 {
   "name": "Personal integration",
-  "true": {
-    "push": {
-      "branches": [
-        "main"
-      ]
-    }
-  },
   "permissions": {
     "contents": "read",
     "pull-requests": "read"
