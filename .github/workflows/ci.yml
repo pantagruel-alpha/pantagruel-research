@@ -77,7 +77,7 @@
       ],
       "name": "Integration",
       "needs": "policy",
-      "if": "${{ github.repository == 'pantagruel-alpha/pantagruel-research' && (github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}"
+      "if": "${{ github.repository == 'aprendesc/pantagruel-research' && (false) }}"
     },
     "deploy": {
       "name": "Deploy Pages",
@@ -99,7 +99,7 @@
           "uses": "actions/deploy-pages@v4"
         }
       ],
-      "if": "${{ github.repository == 'pantagruel-alpha/pantagruel-research' && (github.event_name == 'push' && github.ref == 'refs/heads/main') }}"
+      "if": "${{ github.repository == 'aprendesc/pantagruel-research' && (false) }}"
     },
     "release": {
       "name": "Release",
@@ -133,7 +133,7 @@
           "run": "run_url=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"\ncommit_url=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA\"\nrelease_url=\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/release-$GITHUB_SHA\"\n{\n  echo '# Release'\n  echo\n  echo '| Field | Value |'\n  echo '| --- | --- |'\n  echo '| Result | `published` |'\n  echo \"| Release | [\\`release-$GITHUB_SHA\\`]($release_url) |\"\n  echo \"| Commit | [\\`$GITHUB_SHA\\`]($commit_url) |\"\n  echo \"| Run | [\\`$GITHUB_RUN_ID\\`]($run_url) |\"\n  echo '| Assets | `pantagruel-research-site.tar.gz` |'\n} >> \"$GITHUB_STEP_SUMMARY\"\n"
         }
       ],
-      "if": "${{ github.repository == 'pantagruel-alpha/pantagruel-research' && (github.event_name == 'push' && github.ref == 'refs/heads/main') }}"
+      "if": "${{ github.repository == 'aprendesc/pantagruel-research' && (false) }}"
     },
     "policy": {
       "name": "Personal policy",
@@ -151,7 +151,7 @@
           "run": "python3 .github/personal-ci/gate.py --policy .github/personal-ci/policy.json"
         }
       ],
-      "if": "${{ github.repository == 'pantagruel-alpha/pantagruel-research' && (true) }}"
+      "if": "${{ github.repository == 'aprendesc/pantagruel-research' && (true) }}"
     }
   },
   "on": {
